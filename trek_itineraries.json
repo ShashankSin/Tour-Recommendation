@@ -1,0 +1,267 @@
+[
+  {
+    "title": "Annapurna Circuit Trek",
+    "location": "Annapurna Region, Nepal",
+    "description": "Explore diverse landscapes, traditional villages, and breathtaking mountain views on the Annapurna Circuit Trek.",
+    "duration": 14,
+    "price": 1050,
+    "difficulty": "moderate",
+    "category": "trekking",
+    "images": [
+      "https://example.com/images/annapurna1.jpg",
+      "https://example.com/images/annapurna2.jpg"
+    ],
+    "rating": 4.7,
+    "ratingCount": 398,
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Kathmandu",
+        "description": "Meet and greet at the airport."
+      },
+      {
+        "day": 2,
+        "title": "Drive to Besisahar",
+        "description": "Scenic drive to the trailhead."
+      },
+      {
+        "day": 3,
+        "title": "Trek to Bahundanda",
+        "description": "Start trek through rural villages."
+      }
+    ],
+    "inclusions": [
+      "Guide and porter services",
+      "Trekking permits",
+      "Accommodation during trek",
+      "Three meals a day"
+    ],
+    "userId": "68110d68a5a7d31fef9cfaeb",
+    "route": [
+      {
+        "latitude": 28.2416,
+        "longitude": 84.0192,
+        "title": "Besisahar"
+      },
+      {
+        "latitude": 28.6499,
+        "longitude": 83.5695,
+        "title": "Manang"
+      },
+      {
+        "latitude": 28.7692,
+        "longitude": 83.9466,
+        "title": "Muktinath"
+      }
+    ],
+    "isApproved": true
+  },
+  {
+    "title": "Langtang Valley Trek",
+    "location": "Langtang Region, Nepal",
+    "description": "A short trek that offers spectacular views, rich Tamang culture, and alpine scenery.",
+    "duration": 10,
+    "price": 800,
+    "difficulty": "moderate",
+    "category": "hiking",
+    "images": [
+      "https://example.com/images/langtang1.jpg",
+      "https://example.com/images/langtang2.jpg"
+    ],
+    "rating": 4.6,
+    "ratingCount": 276,
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Drive to Syabrubesi",
+        "description": "Start the journey to Langtang."
+      },
+      {
+        "day": 2,
+        "title": "Trek to Lama Hotel",
+        "description": "Through forests and rivers."
+      },
+      {
+        "day": 3,
+        "title": "Trek to Langtang Village",
+        "description": "Explore the Tamang heritage."
+      }
+    ],
+    "inclusions": [
+      "Trekking guide",
+      "Permits",
+      "Food and lodging",
+      "Transportation to/from Kathmandu"
+    ],
+    "userId": "68110d68a5a7d31fef9cfaeb",
+    "route": [
+      {
+        "latitude": 28.1658,
+        "longitude": 85.3045,
+        "title": "Syabrubesi"
+      },
+      {
+        "latitude": 28.2045,
+        "longitude": 85.5373,
+        "title": "Langtang Village"
+      }
+    ],
+    "isApproved": true
+  },
+  {
+    "title": "Mardi Himal Trek",
+    "location": "Annapurna Region, Nepal",
+    "description": "A hidden gem offering majestic views of Machapuchare and Annapurna ranges with fewer crowds.",
+    "duration": 7,
+    "price": 700,
+    "difficulty": "moderate",
+    "category": "trekking",
+    "images": [
+      "https://example.com/images/mardi1.jpg",
+      "https://example.com/images/mardi2.jpg"
+    ],
+    "rating": 4.8,
+    "ratingCount": 193,
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Drive to Kande, Trek to Forest Camp",
+        "description": "Start the trek in lush forest."
+      },
+      {
+        "day": 2,
+        "title": "Trek to High Camp",
+        "description": "Gain altitude with panoramic views."
+      },
+      {
+        "day": 3,
+        "title": "Hike to Mardi Base Camp",
+        "description": "Sunrise views from base camp."
+      }
+    ],
+    "inclusions": [
+      "Transportation",
+      "Guide services",
+      "Food and accommodation",
+      "Permits"
+    ],
+    "userId": "68110d68a5a7d31fef9cfaeb",
+    "route": [
+      {
+        "latitude": 28.3311,
+        "longitude": 83.8331,
+        "title": "Kande"
+      },
+      {
+        "latitude": 28.4833,
+        "longitude": 83.9167,
+        "title": "Mardi Base Camp"
+      }
+    ],
+    "isApproved": true
+  },
+  {
+    "title": "Upper Mustang Jeep Tour",
+    "location": "Mustang, Nepal",
+    "description": "Discover the ancient kingdom of Mustang with a cultural jeep tour through the arid landscapes.",
+    "duration": 8,
+    "price": 1400,
+    "difficulty": "easy",
+    "category": "adventure travel",
+    "images": [
+      "https://example.com/images/mustang1.jpg",
+      "https://example.com/images/mustang2.jpg"
+    ],
+    "rating": 4.5,
+    "ratingCount": 110,
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Drive to Pokhara",
+        "description": "Travel to the lake city."
+      },
+      {
+        "day": 2,
+        "title": "Fly to Jomsom, Drive to Kagbeni",
+        "description": "Start the Upper Mustang journey."
+      },
+      {
+        "day": 3,
+        "title": "Drive to Lo Manthang",
+        "description": "Explore the walled city."
+      }
+    ],
+    "inclusions": [
+      "Domestic flights",
+      "Jeep and driver",
+      "Accommodation",
+      "Guide and permits"
+    ],
+    "userId": "68110d68a5a7d31fef9cfaeb",
+    "route": [
+      {
+        "latitude": 28.7533,
+        "longitude": 83.7722,
+        "title": "Jomsom"
+      },
+      {
+        "latitude": 29.1798,
+        "longitude": 83.9714,
+        "title": "Lo Manthang"
+      }
+    ],
+    "isApproved": true
+  },
+  {
+    "title": "Rara Lake Trek",
+    "location": "Mugu District, Nepal",
+    "description": "Trek through remote western Nepal to the pristine Rara Lake, the largest lake in Nepal.",
+    "duration": 9,
+    "price": 950,
+    "difficulty": "moderate",
+    "category": "camping",
+    "images": [
+      "https://example.com/images/rara1.jpg",
+      "https://example.com/images/rara2.jpg"
+    ],
+    "rating": 4.9,
+    "ratingCount": 134,
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Fly to Nepalgunj",
+        "description": "Gateway to western Nepal."
+      },
+      {
+        "day": 2,
+        "title": "Fly to Jumla, Trek to Chere Chaur",
+        "description": "Start of the remote trek."
+      },
+      {
+        "day": 3,
+        "title": "Trek to Rara Lake",
+        "description": "Reach the beautiful lake."
+      }
+    ],
+    "inclusions": [
+      "Flights",
+      "Camping equipment",
+      "Guide and porter",
+      "All meals and permits"
+    ],
+    "userId": "68110d68a5a7d31fef9cfaeb",
+    "route": [
+      {
+        "latitude": 29.5205,
+        "longitude": 82.1216,
+        "title": "Jumla"
+      },
+      {
+        "latitude": 29.5261,
+        "longitude": 82.1138,
+        "title": "Rara Lake"
+      }
+    ],
+    "isApproved": true
+  }
+]
