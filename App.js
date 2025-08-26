@@ -24,7 +24,7 @@ const handleTokenExpiration = async () => {
   }
 }
 
-axios.defaults.baseURL = 'http://192.168.1.69:5000/api'
+axios.defaults.baseURL = 'http://10.0.2.2:5000/api'
 axios.defaults.timeout = 10000
 axios.defaults.headers.common['Content-Type'] = 'application/json'
 
@@ -77,7 +77,7 @@ export default function App() {
     <NavigationContainer ref={navigationRef}>
       <AuthProvider>
         <SafeAreaProvider>
-          <StatusBar style="auto" />
+          <StatusBar style="dark" />
           <RootNavigator />
         </SafeAreaProvider>
       </AuthProvider>

@@ -84,7 +84,13 @@ function CompanyDashboardScreen({ navigation }) {
   }
 
   useEffect(() => {
-    fetchDashboardData()
+    // Example: Fetch companies from SQLite
+    const fetchLocalCompanies = async () => {
+      const companies = await getCompanies();
+      // setDashboardData({ ...dashboardData, companyProfile: companies[0] })
+    };
+    fetchLocalCompanies();
+    // fetchDashboardData() // keep original if you want to fetch from API as well
   }, [])
 
   const renderStatCard = (title, value, icon, color, onPress) => (

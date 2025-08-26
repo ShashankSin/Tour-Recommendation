@@ -12,8 +12,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-
 function PaymentScreen({ navigation, route }) {
   const [selectedMethod, setSelectedMethod] = useState('khalti')
   const [isLoading, setIsLoading] = useState(false)
@@ -21,7 +19,7 @@ function PaymentScreen({ navigation, route }) {
   const [loadingBooking, setLoadingBooking] = useState(true)
 
   // Get data from route params
-  const { bookingId, amount, paymentMethod, userToken } = route.params || {}
+  const { bookingId, amount, userId, token } = route.params || {}
 
   const paymentMethods = [
     {
@@ -43,34 +41,25 @@ function PaymentScreen({ navigation, route }) {
   //! Fetch booking details from backend
   useEffect(() => {
     const fetchBookingDetails = async () => {
-      console.log(' Fetching booking details...')
-      console.log(' Booking ID:', bookingId)
-      console.log(' User Token:', userToken ? 'Present' : 'Missing')
-
-      if (!bookingId || !userToken) {
-        console.log(' Missing bookingId or userToken')
+      if(!bookingId || !token) {
         setLoadingBooking(false)
         return
       }
 
       try {
-        console.log('Making API call to fetch booking...')
         const response = await axios.get(
-          `http://192.168.1.100:5000/api/bookings/user/${bookingId}`,
+          `http://10.0.2.2:5000/api/booking/user/${bookingId}`,
           {
             headers: {
-              Authorization: `Bearer ${userToken}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         )
 
-        console.log(' API Response:', response.data)
 
         if (response.data.success) {
-          console.log(' Setting booking data:', response.data.booking)
           setBookingData(response.data.booking)
         } else {
-          console.log(' API returned success: false')
         }
       } catch (error) {
         console.error(' Error fetching booking details:', error)
@@ -82,80 +71,58 @@ function PaymentScreen({ navigation, route }) {
     }
 
     fetchBookingDetails()
-  }, [bookingId, userToken])
+  }, [bookingId, token])
 
-  const handleKhaltiPayment = async () => {
-    setIsLoading(true)
+  const handleKhaltiPayment = async (userId, amount, bookingId, navigation) => {
+  setIsLoading(true)
 
-    try {
-      Alert.alert(
-        'Khalti Payment',
-        'Redirecting to Khalti payment gateway...',
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-            onPress: () => setIsLoading(false),
-          },
-          {
-            text: 'Continue',
-            onPress: async () => {
-              setTimeout(() => {
-                Alert.alert(
-                  'Payment Successful!',
-                  'Your payment has been processed successfully through Khalti.',
-                  [
-                    {
-                      text: 'OK',
-                      onPress: () => {
-                        navigation.navigate('TabNavigator')
-                      },
-                    },
-                  ]
-                )
-                setIsLoading(false)
-              }, 2000)
-            },
-          },
-        ]
-      )
-    } catch (error) {
-      Alert.alert('Payment Error', 'Failed to process Khalti payment')
-      setIsLoading(false)
+  try {
+    // Step 1: Call backend to initiate payment
+    const response = await axios.post('http://10.0.2.2:5000/api/payment/initiate', {
+      userId,
+      amount,
+      bookingId,
+    })
+
+    if (response.data.success) {
+      const { payment, token } = response.data
+
+      const khaltiUrl = payment.payment_url || null
+
+      if (!khaltiUrl) {
+        Alert.alert('Payment Error', 'No payment URL returned from backend')
+        setIsLoading(false)
+        return
+      }
+
+      // Open Khalti URL in WebView or browser
+      navigation.navigate('KhaltiPaymentWebView', { paymentUrl: khaltiUrl, token })
+    } else {
+      Alert.alert('Payment Error', response.data.message || 'Failed to initiate payment')
     }
+  } catch (error) {
+    console.error('Error initiating Khalti payment:', error.response?.data || error.message)
+    Alert.alert('Payment Error', 'Failed to initiate Khalti payment')
+  } finally {
+    setIsLoading(false)
+  }
   }
 
   const handleEsewaPayment = async () => {
     setIsLoading(true)
-
     try {
-      Alert.alert('eSewa Payment', 'Redirecting to eSewa payment gateway...', [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-          onPress: () => setIsLoading(false),
-        },
-        {
-          text: 'Continue',
-          onPress: async () => {
-            setTimeout(() => {
-              Alert.alert(
-                'Payment Successful!',
-                'Your payment has been processed successfully through eSewa.',
-                [
-                  {
-                    text: 'OK',
-                    onPress: () => {
-                      navigation.navigate('TabNavigator')
-                    },
-                  },
-                ]
-              )
-              setIsLoading(false)
-            }, 2000)
-          },
-        },
-      ])
+      const response = await axios.post('http://10.0.2.2:5000/api/payment/Esewa', {
+      userId,
+      amount,
+      bookingId,
+      paymentMethod:'esewa',
+    })
+    if(response.data.success){
+      const { esewaUrl,paymentData } = response.data
+      // Open in browser
+      navigation.navigate('EsewaPaymentWebView', { esewaUrl, paymentData})
+    }
+      setIsLoading(false)
     } catch (error) {
       Alert.alert('Payment Error', 'Failed to process eSewa payment')
       setIsLoading(false)
@@ -164,9 +131,9 @@ function PaymentScreen({ navigation, route }) {
 
   const handlePayment = () => {
     if (selectedMethod === 'khalti') {
-      handleKhaltiPayment()
+      handleKhaltiPayment(userId, amount, bookingId, navigation)
     } else if (selectedMethod === 'esewa') {
-      handleEsewaPayment()
+      handleEsewaPayment(userId, amount, bookingId,'esewa', navigation)
     }
   }
 
@@ -211,7 +178,6 @@ function PaymentScreen({ navigation, route }) {
 
           {bookingData ? (
             <>
-              {console.log('🎯 Rendering booking data:', bookingData)}
               <View className="mb-3">
                 <Text className="text-gray-600 text-sm">Booking ID</Text>
                 <Text className="text-gray-800 font-medium">

@@ -7,7 +7,7 @@ import {
   Alert,
   StyleSheet,
 } from 'react-native'
-
+import { getUserByEmail, verifyUserLocal, updateOtp } from '../../services/sqliteService'
 export default function VerifyOtpScreen({ route, navigation }) {
   const { userId, email, userType, companyId } = route.params || {}
   const [otp, setOtp] = useState('')
@@ -25,6 +25,7 @@ export default function VerifyOtpScreen({ route, navigation }) {
     }
 
     setLoading(true)
+    const user = await getUserByEmail(email);
     try {
       //! Determine the verification endpoint based on user type
       const endpoint =
@@ -52,7 +53,8 @@ export default function VerifyOtpScreen({ route, navigation }) {
           'Success',
           data.message || 'Your account has been verified!'
         )
-
+        const user = await getUserByEmail(email);
+        
         //! Handle navigation based on user type
         if (data.role === 'company' || userType === 'company') {
           navigation.reset({
@@ -85,6 +87,7 @@ export default function VerifyOtpScreen({ route, navigation }) {
   }
 
   const handleResendOtp = async () => {
+    const user = await getUserByEmail(email);
     try {
       const endpoint =
         userType === 'company'
@@ -105,6 +108,10 @@ export default function VerifyOtpScreen({ route, navigation }) {
       const data = await response.json()
       if (response.ok && data.success) {
         Alert.alert('Success', 'New OTP has been sent to your email!')
+        if (user) {
+        await updateOtp(user.id, data.otp);
+        
+      }
       } else {
         Alert.alert('Error', data.message || 'Failed to resend OTP')
       }

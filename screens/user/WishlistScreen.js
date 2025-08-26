@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -14,15 +14,23 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useFocusEffect } from '@react-navigation/native'
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
+import { StatusBar } from 'expo-status-bar'
 
 function WishlistScreen({ navigation }) {
   const [wishlistItems, setWishlistItems] = useState([])
   const [loading, setLoading] = useState(true)
 
+  // 2. useEffect to create tables and fetch wishlists from SQLite
+  useEffect(() => {
+    const fetchLocalWishlists = async () => {
+      const wishlists = await getWishlists();
+      setWishlistItems(wishlists);
+    };
+    fetchLocalWishlists();
+  }, []);
+
   const handleBooking = async (itineraryId) => {
     const token = await AsyncStorage.getItem('token')
-    console.log('Token:', token)
-    console.log('Trek ID:', itineraryId)
     navigation.navigate('Booking', { trekId: itineraryId })
   }
 
@@ -37,7 +45,6 @@ function WishlistScreen({ navigation }) {
       }
 
       const decoded = jwtDecode(token)
-      console.log('✅ Decoded token:', decoded)
 
       const response = await axios.get(
         'http://10.0.2.2:5000/api/wishlist/get',
@@ -48,11 +55,9 @@ function WishlistScreen({ navigation }) {
         }
       )
 
-      console.log('✅ Wishlist API Response:', response.data)
 
       if (response.data.success) {
         const treks = response.data.wishlist.treks
-        console.log('📦 Wishlist Items:', treks)
         setWishlistItems(treks)
       } else {
         Alert.alert('Error', 'Failed to fetch wishlist')
@@ -74,6 +79,7 @@ function WishlistScreen({ navigation }) {
 
   return (
     <SafeAreaView className="flex-1 bg-orange-50">
+      <StatusBar style="dark" />
       <View className="px-4 py-6 bg-orange-500">
         <Text className="text-2xl font-bold text-white">Wishlist</Text>
         <Text className="text-white opacity-80">Your saved destinations</Text>

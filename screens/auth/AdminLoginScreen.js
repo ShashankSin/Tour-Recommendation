@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -24,6 +24,15 @@ function AdminLoginScreen({ route, navigation }) {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    // Example: Fetch admins from SQLite
+    const fetchLocalAdmins = async () => {
+      const admins = await getAdmins();
+      // You can use admins[0] or set state as needed
+    };
+    fetchLocalAdmins();
+  }, []);
 
   const handleAdminLogin = async () => {
     if (!email || !password) {

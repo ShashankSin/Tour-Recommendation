@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
+// 1. Import SQLite service functions
 import {
   View,
   Text,
@@ -20,7 +21,7 @@ import { useRoute } from '@react-navigation/native'
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { jwtDecode } from 'jwt-decode'
+import  {jwtDecode}  from 'jwt-decode'
 const { width, height } = Dimensions.get('window')
 
 const ItineraryDetailScreen = ({ navigation }) => {
@@ -38,6 +39,13 @@ const ItineraryDetailScreen = ({ navigation }) => {
   const [isInWishlist, setIsInWishlist] = useState(false)
   const [wishlistLoading, setWishlistLoading] = useState(false)
 
+  useEffect(() => {
+    const fetchLocalTreks = async () => {
+      const treks = await getTreks();
+    };
+    fetchLocalTreks();
+  }, []);
+
   const [reviews, setReviews] = useState([])
   const [reviewsLoading, setReviewsLoading] = useState(true)
   const [reviewModalVisible, setReviewModalVisible] = useState(false)
@@ -50,6 +58,10 @@ const ItineraryDetailScreen = ({ navigation }) => {
     outputRange: [0, 1],
     extrapolate: 'clamp',
   })
+
+  // for Day by day itinerary
+  const [expandedDayIndex, setExpandedDayIndex] = useState(false)
+  const animatedHeights= useRef(itinerary?.itinerary.map(() => new Animated.Value(0)) || []).current
 
   useEffect(() => {
     const listener = scrollX.addListener(({ value }) => {
@@ -188,9 +200,13 @@ const ItineraryDetailScreen = ({ navigation }) => {
   const submitReview = async () => {
     try {
       setReviewSubmitting(true)
-      const token = await AsyncStorage.getItem('userToken')
+      const token = await AsyncStorage.getItem('token')
       const decoded = jwtDecode(token)
       const userId = decoded.id
+
+      console.log('Token:', token)
+      console.log('User ID:', userId)
+
 
       if (!userId) {
         throw new Error('User not authenticated')
@@ -205,7 +221,7 @@ const ItineraryDetailScreen = ({ navigation }) => {
         {
           trekId: itineraryId,
           userId: userId,
-          companyId: itinerary.companyId,
+          companyId: itinerary.userId,
           rating: rating,
           comment: reviewText,
         },
@@ -431,6 +447,7 @@ const ItineraryDetailScreen = ({ navigation }) => {
               <Text style={styles.locationText}>{itinerary.location}</Text>
             </View>
           </View>
+          </View>
 
           {/* Rating and Reviews Summary */}
           <View style={styles.ratingSummary}>
@@ -525,48 +542,57 @@ const ItineraryDetailScreen = ({ navigation }) => {
 
             {itinerary.itinerary && itinerary.itinerary.length > 0 ? (
               <>
-                {/* Show first 3 days only */}
-                {itinerary.itinerary.slice(0, 3).map((day, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.compactTimelineItem}
-                    onPress={() => {
-                      // In a real app, this would open a modal or navigate to a detailed view
-                      alert(
-                        `Day ${day.day}: ${day.title}\n\n${day.description}`
-                      )
-                    }}
-                  >
-                    <View style={styles.timelineDayBadge}>
-                      <Text style={styles.timelineDayText}>{day.day}</Text>
-                    </View>
-                    <View style={styles.compactTimelineContent}>
-                      <Text style={styles.timelineTitle} numberOfLines={1}>
-                        {day.title}
-                      </Text>
-                      <Text
-                        style={styles.timelineDescription}
-                        numberOfLines={2}
-                      >
-                        {day.description}
-                      </Text>
-                    </View>
-                    <Ionicons
-                      name="chevron-forward"
-                      size={20}
-                      color="#9ca3af"
-                    />
-                  </TouchableOpacity>
-                ))}
+                {itinerary.itinerary.slice(0, 3).map((day, index) => {
+                  // Ensure animatedHeights is synced with itinerary length
+                  if (!animatedHeights[index]) animatedHeights[index] = new Animated.Value(0);
 
-                {/* Show "View All Days" button if there are more than 3 days */}
+                  const toggleExpand = () => {
+                    const isExpanded = expandedDayIndex === index;
+                    setExpandedDayIndex(isExpanded ? null : index);
+
+                    Animated.timing(animatedHeights[index], {
+                      toValue: isExpanded ? 0 : 80, // You can adjust 80 or make dynamic
+                      duration: 300,
+                      useNativeDriver: false,
+                    }).start();
+                  };
+
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      style={styles.compactTimelineItem}
+                      activeOpacity={0.9}
+                      onPress={toggleExpand}
+                    >
+                      <View style={styles.timelineDayBadge}>
+                        <Text style={styles.timelineDayText}>{day.day}</Text>
+                      </View>
+
+                      <View style={styles.compactTimelineContent}>
+                        <Text style={styles.timelineTitle} numberOfLines={1}>
+                          {day.title}
+                        </Text>
+
+                        <Animated.View
+                          style={{ height: animatedHeights[index], overflow: 'hidden' }}
+                        >
+                          <Text style={styles.timelineDescription}>{day.description}</Text>
+                        </Animated.View>
+                      </View>
+
+                      <Ionicons
+                        name={expandedDayIndex === index ? 'chevron-down' : 'chevron-forward'}
+                        size={20}
+                        color="#9ca3af"
+                      />
+                    </TouchableOpacity>
+                  );
+                })}
+
                 {itinerary.itinerary.length > 3 && (
                   <TouchableOpacity
                     style={styles.viewAllDaysButton}
-                    onPress={() => {
-                      // In a real app, this would navigate to a full itinerary view
-                      alert('View all days of the itinerary')
-                    }}
+                    onPress={() => alert('View all days of the itinerary')}
                   >
                     <Text style={styles.viewAllDaysText}>
                       View All {itinerary.itinerary.length} Days
@@ -576,27 +602,9 @@ const ItineraryDetailScreen = ({ navigation }) => {
                 )}
               </>
             ) : (
-              <Text style={styles.noDataText}>
-                No itinerary details available
-              </Text>
+              <Text style={styles.noDataText}>No itinerary details available</Text>
             )}
-          </View>
 
-          {/* Inclusions */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>What's Included</Text>
-            <View style={styles.inclusionsContainer}>
-              {itinerary.inclusions &&
-                itinerary.inclusions.map((inc, index) => (
-                  <View key={index} style={styles.inclusionItem}>
-                    <View style={styles.inclusionIconContainer}>
-                      <Ionicons name="checkmark" size={18} color="#f97316" />
-                    </View>
-                    <Text style={styles.inclusionText}>{inc.name}</Text>
-                  </View>
-                ))}
-            </View>
-          </View>
 
           {/* Map Section */}
           <View style={styles.section}>
@@ -759,6 +767,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    padding: 14,
   },
   loadingContainer: {
     flex: 1,
@@ -1003,7 +1012,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(249, 115, 22, 0.2)',
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 32,
   },
   lastSection: {
     marginBottom: 0,
@@ -1041,11 +1050,13 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   timelineDayBadge: {
-    width: 36,
-    height: 36,
+    width: 32,
+    height: 32,
     borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 12,
+    backgroundColor: '#fda026ff',
   },
   timelineDayText: {
     color: 'white',
@@ -1138,12 +1149,12 @@ const styles = StyleSheet.create({
   writeReviewText: {
     color: '#f97316',
     fontWeight: '600',
-    marginLeft: 6,
     fontSize: 14,
   },
   seeAllText: {
     color: '#f97316',
     fontWeight: '500',
+    marginLeft: 6,
   },
   reviewsLoadingContainer: {
     padding: 20,
@@ -1262,7 +1273,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 10,
   },
   priceContainer: {
     flex: 1,
@@ -1300,7 +1311,7 @@ const styles = StyleSheet.create({
   compactTimelineItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff8f0',
+    backgroundColor: '#e5e7eb',
     borderRadius: 12,
     padding: 12,
     marginBottom: 10,
@@ -1324,7 +1335,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   noDataText: {
-    color: '#6b7280',
+    color: '#e5e7eb',
     fontStyle: 'italic',
     textAlign: 'center',
     padding: 16,

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+
 import {
   View,
   Text,
@@ -36,6 +37,17 @@ const HomeScreen = ({ navigation }) => {
   const [reviews, setReviews] = useState([])
   const [wishlistItems, setWishlistItems] = useState([])
   const [allTreks, setAllTreks] = useState([])
+
+  // 3. useEffect to create tables and fetch treks from SQLite
+  useEffect(() => {
+
+    // Example: Fetch treks from SQLite
+    const fetchTreks = async () => {
+      const treks = await getTreks();
+      setAllTreks(treks);
+    };
+    fetchTreks();
+  }, []);
   const [hasUserActivity, setHasUserActivity] = useState(false)
 
   const fetchUserData = async (token) => {
@@ -51,20 +63,28 @@ const HomeScreen = ({ navigation }) => {
       setBookings([])
     }
 
-    try {
-      //! Fetch user reviews
-      const reviewsResponse = await axios.get('/review/trek/all', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      if (reviewsResponse.data.success) {
-        const userReviews = reviewsResponse.data.reviews.filter(
-          (review) => review.userId._id === user.id
-        )
-        setReviews(userReviews)
-      }
-    } catch (error) {
-      setReviews([])
-    }
+   try {
+  //! Fetch user reviews
+  const reviewsResponse = await axios.get('/review/trek/all', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (reviewsResponse.data.success) {
+
+    const userReviews = reviewsResponse.data.reviews.filter((review) => {
+    const reviewUserId = typeof review.userId === 'string' ? review.userId : review.userId?._id;
+
+
+  // Compare as strings
+  return reviewUserId?.toString() === user.id?.toString();
+});
+
+    setReviews(userReviews);
+  }
+} catch (error) {
+  setReviews([]);
+}
+
 
     try {
       //! Fetch user wishlist

@@ -26,6 +26,10 @@ import PaymentScreen from '../screens/user/PaymentScreen'
 import BudgetPlannerScreen from '../screens/user/BudgetPlannerScreen'
 import MyBookingsScreen from '../screens/user/MyBookingsScreen'
 import BookingDetailScreen from '../screens/user/BookingDetailsScreen'
+import EsewaPaymentWebView from '../screens/user/EsewaPaymentWebView'
+import KhaltiPaymentWebView from '../screens/user/KhaltiPaymentWebView'
+import PaymentSuccess from '../screens/user/PaymentSuccess'
+import PaymentFailed from '../screens/user/PaymentFailed'
 
 //! Company Screens
 import CompanyDashboardScreen from '../screens/company/CompanyDashboardScreen'
@@ -144,6 +148,10 @@ const MainStack = () => (
     <Stack.Screen name="CreateItinerary" component={CreateItineraryScreen} />
     <Stack.Screen name="EditItinerary" component={EditItineraryScreen} />
     <Stack.Screen name="BookingDetail" component={BookingDetailScreen} />
+    <Stack.Screen name="EsewaPaymentWebView" component={EsewaPaymentWebView} />
+    <Stack.Screen name="KhaltiPaymentWebView" component={KhaltiPaymentWebView} />
+    <Stack.Screen name="PaymentSuccess" component={PaymentSuccess} />
+    <Stack.Screen name="PaymentFailure" component={PaymentFailed} />
   </Stack.Navigator>
 )
 

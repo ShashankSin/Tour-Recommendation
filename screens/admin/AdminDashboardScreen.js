@@ -1,4 +1,6 @@
 import { useRef, useEffect } from 'react'
+// 1. Import SQLite service functions
+import { createTables, getAdmins } from '../../services/sqliteService';
 import {
   View,
   Text,
@@ -36,6 +38,14 @@ function AdminDashboardScreen({ navigation }) {
   const pulseAnim = useRef(new Animated.Value(1)).current
 
   useEffect(() => {
+    createTables();
+    // Example: Fetch admins from SQLite
+    const fetchLocalAdmins = async () => {
+      const admins = await getAdmins();
+      // You can use admins[0] or set state as needed
+    };
+    fetchLocalAdmins();
+    // Animation logic
     Animated.stagger(150, [
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -59,7 +69,7 @@ function AdminDashboardScreen({ navigation }) {
         useNativeDriver: true,
       }),
     ]).start()
-
+  }, [])
     Animated.loop(
       Animated.sequence([
         Animated.timing(floatingAnim, {
@@ -89,7 +99,8 @@ function AdminDashboardScreen({ navigation }) {
         }),
       ])
     ).start()
-  }, [])
+  
+
 
   const stats = [
     {
@@ -483,6 +494,6 @@ function AdminDashboardScreen({ navigation }) {
       </View>
     </SafeAreaView>
   )
-}
 
+}
 export default AdminDashboardScreen

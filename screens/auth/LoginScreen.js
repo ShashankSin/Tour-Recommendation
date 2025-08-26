@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+// 1. Import SQLite service functions
+import { createTables, getUsers, insertUser } from '../../services/sqliteService';
 import {
   View,
   Text,
@@ -17,8 +19,10 @@ import { StatusBar } from 'expo-status-bar'
 import { useAuth } from '../../context/AuthContext'
 import { CommonActions } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as SQLite from 'expo-sqlite'
 
-function LoginScreen({ route, navigation }) {
+
+const LoginScreen = ({ route, navigation }) => {
   const { userType = 'user' } = route.params || {}
   const { login } = useAuth()
 
@@ -28,6 +32,16 @@ function LoginScreen({ route, navigation }) {
   const [error, setError] = useState('')
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
+
+  const db= SQLite.openDatabaseSync('app.db');
+  //useEffect to create tables and fetch users from SQLite
+  useEffect(() => {
+    const fetchLocalUsers = async () => {
+      const users = await getUsers();
+      console.log('SQLite Users:', users);
+    };
+    fetchLocalUsers();
+  }, []);
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -64,15 +78,12 @@ function LoginScreen({ route, navigation }) {
     }
 
     setIsLoading(true)
-    setError('')
-
     try {
       const response = await fetch('http://10.0.2.2:5000/api/auth/loginUser', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, userType }),
       })
-
       const data = await response.json()
 
       if (response.ok && data.success) {
@@ -83,6 +94,8 @@ function LoginScreen({ route, navigation }) {
           email: data.email,
           role: userType,
         })
+        
+        
       } else {
         setError(data.message || 'Login failed')
       }

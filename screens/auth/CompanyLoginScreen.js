@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -22,6 +22,16 @@ const CompanyLoginScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const { login } = useAuth()
+
+  // 2. useEffect to create tables and fetch companies from SQLite
+  useEffect(() => {
+    // Example: Fetch companies from SQLite
+    const fetchLocalCompanies = async () => {
+      const companies = await getCompanies();
+      // You can use companies[0] or set state as needed
+    };
+    fetchLocalCompanies();
+  }, []);
 
   const handleLogin = async () => {
     if (!email || !password) {

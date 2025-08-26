@@ -120,7 +120,6 @@ function ExploreScreen({ navigation, route }) {
   const TrekCard = ({ trek, showSimilarity = false }) => (
     <TouchableOpacity
       className="mx-2 mb-4 bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-200"
-      style={{ width: 300 }}
       onPress={() =>
         navigation.navigate('ItineraryDetail', { itineraryId: trek._id })
       }

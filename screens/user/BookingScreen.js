@@ -1,4 +1,6 @@
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect } from 'react'
+// 1. Import SQLite service functions
+import { createTables, getBookings } from '../../services/sqliteService';
 import {
   View,
   Text,
@@ -22,48 +24,51 @@ import { useAuth } from '../../context/AuthContext'
 
 const { width } = Dimensions.get('window')
 
-const paymentOptions = [
-  { id: 'khalti', label: 'Khalti' },
-  { id: 'esewa', label: 'eSewa' },
-]
 
-const renderPaymentOptions = () => {
-  if (formStep === 'review') {
-    return (
-      <View style={styles.detailRow}>
-        <Text style={styles.detailLabel}>Payment Method</Text>
-        <Text style={styles.detailValue}>
-          {paymentOptions.find((opt) => opt.id === formData.paymentMethod)
-            ?.label || formData.paymentMethod}
-        </Text>
-      </View>
-    )
-  }
+// const paymentOptions = [
+//   { id: 'khalti', label: 'Khalti' },
+//   { id: 'esewa', label: 'eSewa' },
+// ];
 
-  return (
-    <View style={styles.paymentContainer}>
-      {paymentOptions.map((option) => (
-        <TouchableOpacity
-          key={option.id}
-          style={[
-            styles.paymentButton,
-            formData.paymentMethod === option.id && styles.paymentButtonActive,
-          ]}
-          onPress={() => handleInputChange('paymentMethod', option.id)}
-        >
-          <Text
-            style={[
-              styles.paymentButtonText,
-              formData.paymentMethod === option.id && { color: 'white' },
-            ]}
-          >
-            {option.label}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  )
-}
+
+// const renderPaymentOptions = () => {
+//   if (formStep === 'review') {
+//     return (
+//       <View style={styles.detailRow}>
+//         <Text style={styles.detailLabel}>Payment Method</Text>
+//         <Text style={styles.detailValue}>
+//           {paymentOptions.find((opt) => opt.id === formData.paymentMethod)
+//             ?.label || formData.paymentMethod}
+//         </Text>
+//       </View>
+//     )
+//   }
+
+//   return (
+//     <View style={styles.paymentContainer}>
+//       {paymentOptions.map((option) => (
+//         <TouchableOpacity
+//           key={option.id}
+//           style={[
+//             styles.paymentButton,
+//             formData.paymentMethod === option.id && styles.paymentButtonActive,
+//           ]}
+//           onPress={() => {handleInputChange('paymentMethod', option.id)}}
+
+//         >
+//           <Text
+//             style={[
+//               styles.paymentButtonText,
+//               formData.paymentMethod === option.id && { color: 'white' },
+//             ]}
+//           >
+//             {option.label}
+//           </Text>
+//         </TouchableOpacity>
+//       ))}
+//     </View>
+//   )
+// }
 
 function BookingScreen({ navigation, route }) {
   const { user } = useAuth()
@@ -356,11 +361,8 @@ function BookingScreen({ navigation, route }) {
         console.log('Booking response:', response.data)
         setBookingId(response.data.booking._id)
 
-        navigation.navigate('TabNavigator', {
-          screen: 'Home',
-        })
-
-        break
+        navigation.navigate('Payment',{userId:userId, amount:calculateTotalPrice(), token: storedToken, bookingId: response.data.booking._id})
+        break   
       } catch (err) {
         currentTry++
         console.error('Full error:', err)
@@ -626,7 +628,7 @@ function BookingScreen({ navigation, route }) {
             </View>
           </View>
 
-          <View style={styles.inputGroup}>
+          {/* <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Payment Method</Text>
             <View style={styles.paymentContainer}>
               {paymentOptions.map((option) => (
@@ -651,7 +653,7 @@ function BookingScreen({ navigation, route }) {
                 </TouchableOpacity>
               ))}
             </View>
-          </View>
+          </View> */}
 
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Special Requests (Optional)</Text>
@@ -771,7 +773,7 @@ function BookingScreen({ navigation, route }) {
             <Text style={styles.detailValue}>{getTripDuration()} days</Text>
           </View>
 
-          <View style={styles.detailRow}>
+          {/* <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Payment Method</Text>
             <View style={styles.reviewRow}>
               <Ionicons name="wallet-outline" size={20} color="#f97316" />
@@ -780,7 +782,7 @@ function BookingScreen({ navigation, route }) {
                   ?.label || 'Khalti'}
               </Text>
             </View>
-          </View>
+          </View> */}
 
           {formData.specialRequests ? (
             <View style={styles.detailRowLast}>

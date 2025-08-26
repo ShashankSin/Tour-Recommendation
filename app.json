@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "Tour Itinerary App",
-    "slug": "Frontend",
+    "name": "Tour-Recommendation",
+    "slug": "trek-recommendation",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "schema": "myapp",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -14,7 +15,8 @@
     },
     "ios": {
       "buildNumber": "1.0.0",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.shashanksingh-soul.Frontend"
     },
     "android": {
       "versionCode": 1,
@@ -29,8 +31,12 @@
     },
     "extra": {
       "eas": {
-        "projectId": "3e2fc88c-42d1-4859-afb2-61b5436ba717"
+        "projectId": "b21fc94a-1db9-4952-bfba-1260466a0682"
       }
-    }
+    },
+    "owner": "shashanksingh_soul",
+    "plugins": [
+      "expo-sqlite"
+    ]
   }
 }

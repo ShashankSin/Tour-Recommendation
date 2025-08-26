@@ -25,7 +25,8 @@ import {
   Star,
 } from 'lucide-react-native'
 
-function ProfileScreen({ navigation }) {
+
+function ProfileScreen({ navigation}) {
   const [user, setUser] = useState({
     id: '',
     name: '',
@@ -37,9 +38,7 @@ function ProfileScreen({ navigation }) {
 
   const { logout } = useAuth()
 
-  useEffect(() => {
-    fetchUserData()
-  }, [])
+  
 
   const fetchUserData = async () => {
     try {
@@ -87,6 +86,10 @@ function ProfileScreen({ navigation }) {
       Alert.alert('Error', 'Failed to load profile data')
     }
   }
+  useEffect(() => {
+  fetchUserData()
+}, [])
+
 
   const handleLogout = async () => {
     try {
@@ -258,7 +261,7 @@ function ProfileScreen({ navigation }) {
               />
             )}
           </View>
-        </View>
+        </View> 
       </ScrollView>
     </SafeAreaView>
   )

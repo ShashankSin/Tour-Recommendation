@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+// 1. Import SQLite service functions
+import { createTables, getUsers, insertUser, initDb } from '../../services/sqliteService';
 import {
   View,
   Text,
@@ -15,6 +17,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as SQLite from 'expo-sqlite'
 
 export default function SignupScreen({ route, navigation }) {
   const [userType, setUserType] = useState('')
@@ -31,7 +34,17 @@ export default function SignupScreen({ route, navigation }) {
   const [confirmPasswordError, setConfirmPasswordError] = useState('')
 
   useEffect(() => {
-    //! Read userType from route.params and save to state
+    async function setupDatabase() {
+      await initDb();
+      await createTables();
+      const users = await getUsers();
+      console.log('SQLite Users:', users);
+    }
+    setupDatabase();
+    const fetchLocalUsers = async () => {
+      const users = await getUsers();
+    };
+    fetchLocalUsers();
     if (route?.params?.userType) {
       setUserType(route.params.userType)
       AsyncStorage.setItem('userType', route.params.userType)
@@ -129,12 +142,13 @@ export default function SignupScreen({ route, navigation }) {
           'Signup Success',
           'Check your email for a verification OTP.'
         )
-
+        await insertUser({ name, email, password, role: userType }, data.otp);;
         navigation.navigate('VerifyOtp', {
           userId: data.userId,
           email,
           userType,
         })
+        
       } else {
         setError(data.message || 'Failed to register')
       }
