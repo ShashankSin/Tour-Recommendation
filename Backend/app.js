@@ -21,6 +21,7 @@ import dashboardRoutes from './routes/dashboardRoutes.js'
 
 // Import database connection
 import connectDB from './config/mongodb.js'
+import Payment from './routes/PaymentRoutes.js'
 
 const app = express()
 
@@ -60,6 +61,7 @@ app.use('/api/admin', adminRouter)
 app.use('/api/recommendations', recommendationRoutes)
 app.use('/api/auth/company', companyAuthRoutes)
 app.use('/api/dashboard', dashboardRoutes)
+app.use('/api/payment', Payment)
 
 // Error handling middleware
 app.use((err, req, res, next) => {

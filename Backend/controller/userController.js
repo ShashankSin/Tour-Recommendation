@@ -12,7 +12,6 @@ export const getUserdata = async (req, res) => {
 
     const token = authHeader.split(' ')[1] // extract the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET) // verify token
-    console.log('Decoded:', decoded)
 
     const userId = decoded.id
     if (!userId) {

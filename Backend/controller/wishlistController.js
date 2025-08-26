@@ -5,7 +5,6 @@ import Trek from '../model/trekModel.js'
 export const getWishlist = async (req, res) => {
   try {
     const userId = req.user?.id
-    console.log('🔐 Decoded user ID from token:', userId)
 
     if (!userId) {
       return res
@@ -20,7 +19,6 @@ export const getWishlist = async (req, res) => {
     if (!wishlist) {
       wishlist = new Wishlist({ userId, treks: [] })
       await wishlist.save()
-      console.log('🆕 Created new empty wishlist for user:', userId)
     }
 
     // Populate treks and their associated company
@@ -36,7 +34,6 @@ export const getWishlist = async (req, res) => {
     })
 
     const trekIds = (wishlist.treks || []).map((trek) => trek._id)
-    console.log('📦 Trek IDs in Wishlist:', trekIds)
 
     return res.status(200).json({
       success: true,

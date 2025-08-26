@@ -2,6 +2,8 @@ import Trek from '../model/trekModel.js'
 import Review from '../model/reviewModel.js'
 import Wishlist from '../model/wishlistModel.js'
 import Booking from '../model/bookingModel.js'
+import userModel from '../model/userModel.js'
+import mongoose from 'mongoose'
 
 class TrekRecommendationEngine {
   constructor() {
@@ -20,7 +22,6 @@ class TrekRecommendationEngine {
   //! Create feature vector for a trek
   createTrekVector(trek) {
     if (!trek) {
-      console.error('Invalid trek object provided to createTrekVector')
       return [0, 0, 0, 0, 0, 0]
     }
 
@@ -37,7 +38,6 @@ class TrekRecommendationEngine {
   //! Create user preference vector based on their interactions
   async createUserVector(userId) {
     if (!userId) {
-      console.error('Invalid userId provided to createUserVector')
       return await this.getAverageVector()
     }
 
@@ -104,7 +104,6 @@ class TrekRecommendationEngine {
 
       return weightedVector
     } catch (error) {
-      console.error('Error creating user vector:', error)
       return await this.getAverageVector()
     }
   }
@@ -132,7 +131,6 @@ class TrekRecommendationEngine {
 
       return avgVector
     } catch (error) {
-      console.error('Error getting average vector:', error)
       return [2, 2, 2, 7, 4, 3] // Default fallback vector
     }
   }
@@ -140,12 +138,10 @@ class TrekRecommendationEngine {
   //! Calculate cosine similarity between two vectors
   cosineSimilarity(vectorA, vectorB) {
     if (!Array.isArray(vectorA) || !Array.isArray(vectorB)) {
-      console.error('Invalid vectors provided to cosineSimilarity')
       return 0
     }
 
     if (vectorA.length !== vectorB.length) {
-      console.error('Vectors must have the same length')
       return 0
     }
 
@@ -234,7 +230,6 @@ class TrekRecommendationEngine {
         score: rec.score,
       }))
     } catch (error) {
-      console.error('Error getting recommendations:', error)
       throw error
     }
   }
@@ -248,7 +243,6 @@ class TrekRecommendationEngine {
 
       return treks || []
     } catch (error) {
-      console.error('Error getting trending treks:', error)
       throw error
     }
   }
@@ -262,7 +256,6 @@ class TrekRecommendationEngine {
 
       return treks || []
     } catch (error) {
-      console.error('Error getting popular destinations:', error)
       throw error
     }
   }

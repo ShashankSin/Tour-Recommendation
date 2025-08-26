@@ -65,7 +65,6 @@ export const createTrek = async (req, res) => {
       trek,
     })
   } catch (error) {
-    console.error('Create Trek Error:', error)
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -141,7 +140,6 @@ export const getAllTreks = async (req, res) => {
       },
     })
   } catch (error) {
-    console.error('Get All Treks Error:', error)
     return res.status(500).json({
       success: false,
       message: error.message || 'Server Error',
@@ -224,8 +222,6 @@ export const deleteTrek = async (req, res) => {
     const { id } = req.params
     const userId = req.userId
 
-    console.log('Trek ID to delete:', id) // 🔍 Log the trek ID
-    console.log('Requesting user ID:', userId) // 🔍 Log user ID for validation
 
     const trek = await Trek.findById(id)
 
@@ -243,7 +239,6 @@ export const deleteTrek = async (req, res) => {
       })
     }
 
-    console.log('Deleting Trek:', trek) // 🔍 Optional full log
 
     await Trek.findByIdAndDelete(id)
 
@@ -365,7 +360,6 @@ export const rejectTrek = async (req, res) => {
 export const getitinerary = async (req, res) => {
   try {
     const { id } = req.params
-    console.log('Requested Trek ID:', id)
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -400,7 +394,6 @@ export const getitinerary = async (req, res) => {
 export const useritineraryfetch = async (req, res) => {
   try {
     const { id } = req.params
-    console.log('Public itinerary fetch requested for ID:', id)
 
     if (!id || id === 'undefined' || !mongoose.Types.ObjectId.isValid(id)) {
       return res
@@ -430,7 +423,6 @@ export const useritineraryfetch = async (req, res) => {
       companyId = itinerary.userId
     }
 
-    console.log('Resolved companyId:', companyId)
 
     // Return itinerary with companyId field explicitly set
     return res.status(200).json({

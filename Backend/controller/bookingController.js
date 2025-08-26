@@ -65,7 +65,7 @@ export const createBooking = async (req, res) => {
       endDate,
       participants,
       totalPrice,
-      paymentMethod: paymentMethod || 'card',
+      paymentMethod: paymentMethod || 'Khalti',
       specialRequests,
       status: 'pending',
       paymentStatus: 'pending',
@@ -80,50 +80,50 @@ export const createBooking = async (req, res) => {
     const companyName = company?.name || 'the company'
     const companyEmail = company?.email || 'no-reply@example.com'
     //! User confirmation email
-    const userMailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: customerEmail,
-      subject: 'Booking Confirmation - TrekGuide',
-      text: `Hi ${customerName},
+    // const userMailOptions = {
+    //   from: process.env.SENDER_EMAIL,
+    //   to: customerEmail,
+    //   subject: 'Booking Confirmation - TrekGuide',
+    //   text: `Hi ${customerName},
 
-        Thank you for booking ${
-          trek.title
-        } with ${companyName}. Your booking is pending confirmation from the company.
+    //     Thank you for booking ${
+    //       trek.title
+    //     } with ${companyName}. Your booking is pending confirmation from the company.
 
-        Booking Details:
-        Start Date: ${new Date(startDate).toLocaleDateString()}
-        End Date: ${new Date(endDate).toLocaleDateString()}
-        Participants: ${participants}
-        Total Price: $${totalPrice}
+    //     Booking Details:
+    //     Start Date: ${new Date(startDate).toLocaleDateString()}
+    //     End Date: ${new Date(endDate).toLocaleDateString()}
+    //     Participants: ${participants}
+    //     Total Price: $${totalPrice}
 
-        You will receive another email once your booking is confirmed.
+    //     You will receive another email once your booking is confirmed.
 
-        Regards,
-        TrekGuide Team`,
-    }
+    //     Regards,
+    //     TrekGuide Team`,
+    // }
     // Company notification email
-    const companyMailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: companyEmail,
-      subject: 'New Booking Notification - TrekGuide',
-      text: `Hello ${companyName},
-        You have received a new booking for ${trek.title}.
-        Booking Details:
-        Customer: ${customerName}
-        Email: ${customerEmail}
-        Phone: ${customerPhone || 'Not provided'}
-        Start Date: ${new Date(startDate).toLocaleDateString()}
-        End Date: ${new Date(endDate).toLocaleDateString()}
-        Participants: ${participants}
-        Total Price: $${totalPrice}
+    // const companyMailOptions = {
+    //   from: process.env.SENDER_EMAIL,
+    //   to: companyEmail,
+    //   subject: 'New Booking Notification - TrekGuide',
+    //   text: `Hello ${companyName},
+    //     You have received a new booking for ${trek.title}.
+    //     Booking Details:
+    //     Customer: ${customerName}
+    //     Email: ${customerEmail}
+    //     Phone: ${customerPhone || 'Not provided'}
+    //     Start Date: ${new Date(startDate).toLocaleDateString()}
+    //     End Date: ${new Date(endDate).toLocaleDateString()}
+    //     Participants: ${participants}
+    //     Total Price: $${totalPrice}
 
-        Please log in to your dashboard to confirm or cancel this booking.
+    //     Please log in to your dashboard to confirm or cancel this booking.
 
-        Regards,
-        TrekGuide Team`,
-    }
-    await transporter.sendMail(userMailOptions)
-    await transporter.sendMail(companyMailOptions)
+    //     Regards,
+    //     TrekGuide Team`,
+    // }
+    // await transporter.sendMail(userMailOptions)
+    // await transporter.sendMail(companyMailOptions)
     return res.status(201).json({
       success: true,
       message: 'Booking created successfully',
@@ -142,12 +142,19 @@ export const createBooking = async (req, res) => {
 export const getUserBookings = async (req, res) => {
   try {
     // Get user ID from authenticated user
-    const userId = req.user.id
+    const bookingId = req.params.id
 
-    const bookings = await Booking.find({ userId })
+    const bookings = await Booking.find({ bookingId })
       .populate('trekId', 'title location duration images')
       .populate('companyId', 'name')
       .sort({ createdAt: -1 })
+
+    if (!bookings || bookings.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No bookings found for this user',
+      })
+    }
 
     return res.status(200).json({
       success: true,
