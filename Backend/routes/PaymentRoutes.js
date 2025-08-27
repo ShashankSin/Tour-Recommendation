@@ -9,7 +9,7 @@ router.post('/Esewa',initiatePaymentEsewa)
 
 // Route to verify payment
 router.post('/verify', verifyPaymentKhalti)
-router.get('/verifyEsewa', verifyPaymentEsewa)
+router.post('/verifyEsewa', verifyPaymentEsewa)
 router.get('/failureEsewa', (req, res) => {
   res.send("Payment Failed")
 })
