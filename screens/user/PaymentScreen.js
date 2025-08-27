@@ -74,38 +74,38 @@ function PaymentScreen({ navigation, route }) {
   }, [bookingId, token])
 
   const handleKhaltiPayment = async (userId, amount, bookingId, navigation) => {
-  setIsLoading(true)
+    setIsLoading(true)
 
-  try {
-    // Step 1: Call backend to initiate payment
-    const response = await axios.post('http://10.0.2.2:5000/api/payment/initiate', {
-      userId,
-      amount,
-      bookingId,
-    })
+    try {
+      // Step 1: Call backend to initiate payment
+      const response = await axios.post('http://10.0.2.2:5000/api/payment/initiate', {
+        userId,
+        amount,
+        bookingId,
+      })
 
-    if (response.data.success) {
-      const { payment, token } = response.data
+      if (response.data.success) {
+        const { payment, token } = response.data
 
-      const khaltiUrl = payment.payment_url || null
+        const khaltiUrl = payment.payment_url || null
 
-      if (!khaltiUrl) {
-        Alert.alert('Payment Error', 'No payment URL returned from backend')
-        setIsLoading(false)
-        return
+        if (!khaltiUrl) {
+          Alert.alert('Payment Error', 'No payment URL returned from backend')
+          setIsLoading(false)
+          return
+        }
+
+        // Open Khalti URL in WebView or browser
+        navigation.navigate('KhaltiPaymentWebView', { paymentUrl: khaltiUrl, token })
+      } else {
+        Alert.alert('Payment Error', response.data.message || 'Failed to initiate payment')
       }
-
-      // Open Khalti URL in WebView or browser
-      navigation.navigate('KhaltiPaymentWebView', { paymentUrl: khaltiUrl, token })
-    } else {
-      Alert.alert('Payment Error', response.data.message || 'Failed to initiate payment')
+    } catch (error) {
+      console.error('Error initiating Khalti payment:', error.response?.data || error.message)
+      Alert.alert('Payment Error', 'Failed to initiate Khalti payment')
+    } finally {
+      setIsLoading(false)
     }
-  } catch (error) {
-    console.error('Error initiating Khalti payment:', error.response?.data || error.message)
-    Alert.alert('Payment Error', 'Failed to initiate Khalti payment')
-  } finally {
-    setIsLoading(false)
-  }
   }
 
   const handleEsewaPayment = async () => {
@@ -120,7 +120,7 @@ function PaymentScreen({ navigation, route }) {
     if(response.data.success){
       const { esewaUrl,paymentData } = response.data
       // Open in browser
-      navigation.navigate('EsewaPaymentWebView', { esewaUrl, paymentData})
+      navigation.navigate('EsewaPaymentWebView', { esewaUrl, paymentData,token,bookingId})
     }
       setIsLoading(false)
     } catch (error) {

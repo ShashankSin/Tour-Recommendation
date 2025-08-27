@@ -43,7 +43,7 @@ const KhaltiPaymentWebView = ({ route, navigation }) => {
         }
 
   }
-}
+  }
   return (
     <WebView
       source={{ uri: paymentUrl }}
