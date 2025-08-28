@@ -1,0 +1,20 @@
+[
+  {
+    "email": "admin1@example.com",
+    "password": "$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36Zp8OW8JrjF2jQK.yF/7.e",
+    "name": "Super Admin 1",
+    "role": "admin"
+  },
+  {
+    "email": "admin2@example.com",
+    "password": "$2a$10$7QJjSxYJ6vlkSx3gG0QWZOxg6bYFjF4bFf8I2Zj3y7H7C5XqZ6b4W",
+    "name": "Super Admin 2",
+    "role": "admin"
+  },
+  {
+    "email": "admin3@example.com",
+    "password": "$2a$10$5B9fE7oZx2n3S1QpZ9lX0.uI8bA3cN9gYtD6O8kF4hR1K7sBz4vU6",
+    "name": "Super Admin",
+    "role": "admin"
+  }
+]

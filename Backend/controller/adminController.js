@@ -1,6 +1,8 @@
 import Admin from '../model/Admin.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import Company from '../model/companyModel.js'
+import User from '../model/userModel.js'
 
 export const loginAdmin = async (req, res) => {
   try {
@@ -19,16 +21,15 @@ export const loginAdmin = async (req, res) => {
     if (!admin) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials',
+        message: 'Invalid Email',
       })
     }
 
     // Verify password
-    const isMatch = await bcrypt.compare(password, admin.password)
-    if (!isMatch) {
+    if (password !== admin.password) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials',
+        message: 'Invalid password',
       })
     }
 
@@ -62,4 +63,56 @@ export const loginAdmin = async (req, res) => {
       error: error.message,
     })
   }
+}
+
+export const getCompany = async (req, res)=>{
+  try{
+    const company= await Company.find()
+
+    if (!company || company.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No companies found',
+      })
+    }
+    res.status(200).json({
+      success:true,
+      message:'Company fetched successfully',
+      data:company
+    })
+  }catch(error){
+    console.error('Get Company Error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Fetching company failed',
+      error: error.message,
+    })
+  }
+}
+
+export const getUsers = async (req, res) => {
+
+  try{
+    const users= await User.find()
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No users found',
+      })
+    }
+    res.status(200).json({
+      success:true,
+      message:'Users fetched successfully',
+      data:users
+    })
+  }catch(error){
+    console.error('Get Users Error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Fetching users failed',
+      error: error.message,
+    })
+  }
+
 }
