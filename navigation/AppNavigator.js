@@ -98,7 +98,7 @@ const CompanyBottomTabs = () => (
   </Tab.Navigator>
 )
 
-const AdminBottomTabs = () => (
+const AdminBottomTabs = () => (     
   <Tab.Navigator
     screenOptions={({ route }) => ({
       headerShown: false,

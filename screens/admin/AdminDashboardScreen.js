@@ -1,13 +1,10 @@
 import { useRef, useEffect } from 'react'
-// 1. Import SQLite service functions
-import { createTables, getAdmins } from '../../services/sqliteService';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   Animated,
-  Dimensions,
   Alert,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -22,11 +19,9 @@ import {
   LogOut,
   Settings,
   Bell,
-  Sparkles,
   Crown,
 } from 'lucide-react-native'
 
-const { width } = Dimensions.get('window')
 
 function AdminDashboardScreen({ navigation }) {
   const { logout } = useAuth()
@@ -38,7 +33,6 @@ function AdminDashboardScreen({ navigation }) {
   const pulseAnim = useRef(new Animated.Value(1)).current
 
   useEffect(() => {
-    createTables();
     // Example: Fetch admins from SQLite
     const fetchLocalAdmins = async () => {
       const admins = await getAdmins();
@@ -137,32 +131,6 @@ function AdminDashboardScreen({ navigation }) {
     },
   ]
 
-  const recentActivities = [
-    {
-      action: 'New user registered',
-      user: 'John Doe',
-      time: '2 minutes ago',
-      type: 'user',
-    },
-    {
-      action: 'Company verified',
-      user: 'Acme Corp',
-      time: '15 minutes ago',
-      type: 'company',
-    },
-    {
-      action: 'Payment processed',
-      user: 'Tech Solutions',
-      time: '1 hour ago',
-      type: 'payment',
-    },
-    {
-      action: 'User profile updated',
-      user: 'Jane Smith',
-      time: '2 hours ago',
-      type: 'update',
-    },
-  ]
 
   const handleLogout = async () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
@@ -298,42 +266,6 @@ function AdminDashboardScreen({ navigation }) {
     const ActivityIcon = getActivityIcon(activity.type)
     const colors = getActivityColor(activity.type)
 
-    return (
-      <Animated.View
-        className={`p-6 ${
-          index !== recentActivities.length - 1
-            ? 'border-b border-gray-100'
-            : ''
-        }`}
-        style={{
-          opacity: itemAnim,
-          transform: [
-            {
-              translateX: itemAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [50, 0],
-              }),
-            },
-          ],
-        }}
-      >
-        <View className="flex-row items-center">
-          <View
-            className={`w-14 h-14 ${colors.bg} rounded-2xl items-center justify-center mr-5`}
-          >
-            <ActivityIcon size={24} color={colors.icon} />
-          </View>
-          <View className="flex-1">
-            <Text className="text-gray-900 font-semibold text-lg mb-1">
-              {activity.action}
-            </Text>
-            <Text className="text-gray-600 text-base">
-              {activity.user} • {activity.time}
-            </Text>
-          </View>
-        </View>
-      </Animated.View>
-    )
   }
 
   const floatingY = floatingAnim.interpolate({
@@ -387,14 +319,14 @@ function AdminDashboardScreen({ navigation }) {
 
               {/* Header Actions */}
               <View className="flex-row space-x-4">
-                <TouchableOpacity className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl items-center justify-center">
+                <TouchableOpacity className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl items-center justify-center mr-3">
                   <Bell size={26} color="white" />
                 </TouchableOpacity>
-                <TouchableOpacity className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl items-center justify-center">
+                <TouchableOpacity className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl items-center justify-center mr-3">
                   <Settings size={26} color="white" />
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl items-center justify-center"
+                  className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl items-center justify-center"
                   onPress={handleLogout}
                 >
                   <LogOut size={26} color="white" />
@@ -432,12 +364,12 @@ function AdminDashboardScreen({ navigation }) {
             <Text className="text-2xl font-bold text-gray-900 mb-8">
               Quick Actions
             </Text>
-            <View className="flex-row space-x-6">
+            <View className="flex-row flex-wrap justify-between">
               <TouchableOpacity
-                className="flex-1 bg-orange-500 rounded-3xl p-8 items-center shadow-xl"
-                onPress={() => navigation?.navigate('AdminUsers')}
+                className="flex bg-orange-500 rounded-3xl p-5 items-center shadow-xl"
+                onPress={() => navigation?.navigate('Users')}
               >
-                <View className="w-20 h-20 bg-white/20 rounded-2xl items-center justify-center mb-6">
+                <View className="p-4 bg-white/20 rounded-2xl items-center justify-center mb-6">
                   <Users size={32} color="white" />
                 </View>
                 <Text className="text-white font-bold text-xl mb-2">
@@ -448,10 +380,10 @@ function AdminDashboardScreen({ navigation }) {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                className="flex-1 bg-red-500 rounded-3xl p-8 items-center shadow-xl"
-                onPress={() => navigation?.navigate('AdminCompanies')}
+                className="flex bg-red-500 rounded-3xl p-8 items-center shadow-xl"
+                onPress={() => navigation?.navigate('Companies')}
               >
-                <View className="w-20 h-20 bg-white/20 rounded-2xl items-center justify-center mb-6">
+                <View className="p-4 bg-white/20 rounded-2xl items-center justify-center mb-6">
                   <Building2 size={32} color="white" />
                 </View>
                 <Text className="text-white font-bold text-xl mb-2">
@@ -472,23 +404,7 @@ function AdminDashboardScreen({ navigation }) {
               transform: [{ translateY: statsSlide }],
             }}
           >
-            <View className="flex-row items-center justify-between mb-8">
-              <Text className="text-2xl font-bold text-gray-900">
-                Recent Activity
-              </Text>
-              <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-                <Sparkles size={28} color="#ea580c" />
-              </Animated.View>
-            </View>
-            <View className="bg-white rounded-3xl border border-orange-100 shadow-xl overflow-hidden">
-              {recentActivities.map((activity, index) => (
-                <AnimatedActivityItem
-                  key={index}
-                  activity={activity}
-                  index={index}
-                />
-              ))}
-            </View>
+            
           </Animated.View>
         </ScrollView>
       </View>

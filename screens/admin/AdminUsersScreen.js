@@ -11,7 +11,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import {
   Search,
-  Filter,
   MoreVertical,
   Mail,
   Phone,
@@ -19,13 +18,18 @@ import {
   Users,
   UserCheck,
   Sparkles,
+  Calendar,
   Crown,
 } from 'lucide-react-native'
+import axios from 'axios'
 
 const { width } = Dimensions.get('window')
 
 function AdminUsersScreen() {
   const [searchQuery, setSearchQuery] = useState('')
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current
@@ -34,8 +38,29 @@ function AdminUsersScreen() {
   const searchScale = useRef(new Animated.Value(0.95)).current
   const floatingAnim = useRef(new Animated.Value(0)).current
 
+  // Fetch users from API
   useEffect(() => {
-    // Staggered animations
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(
+          'http://10.0.2.2:5000/api/admin/getUsers'
+        )
+        if (response.data.success) {
+          setUsers(response.data.data)
+        } else {
+          setError('Failed to fetch users')
+        }
+      } catch (err) {
+        console.error(err)
+        setError('Failed to fetch users')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUsers()
+
+    // Header & search animations
     Animated.stagger(150, [
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -78,53 +103,6 @@ function AdminUsersScreen() {
     ).start()
   }, [])
 
-  const users = [
-    {
-      id: 1,
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      phone: '+1 (555) 123-4567',
-      location: 'New York, NY',
-      status: 'Active',
-      role: 'User',
-      joinDate: '2024-01-15',
-      avatar: 'JD',
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      email: 'jane.smith@example.com',
-      phone: '+1 (555) 987-6543',
-      location: 'Los Angeles, CA',
-      status: 'Active',
-      role: 'Admin',
-      joinDate: '2024-01-10',
-      avatar: 'JS',
-    },
-    {
-      id: 3,
-      name: 'Mike Johnson',
-      email: 'mike.johnson@example.com',
-      phone: '+1 (555) 456-7890',
-      location: 'Chicago, IL',
-      status: 'Inactive',
-      role: 'User',
-      joinDate: '2024-01-08',
-      avatar: 'MJ',
-    },
-    {
-      id: 4,
-      name: 'Sarah Wilson',
-      email: 'sarah.wilson@example.com',
-      phone: '+1 (555) 321-0987',
-      location: 'Miami, FL',
-      status: 'Active',
-      role: 'Moderator',
-      joinDate: '2024-01-12',
-      avatar: 'SW',
-    },
-  ]
-
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -135,16 +113,6 @@ function AdminUsersScreen() {
       : 'bg-red-100 text-red-800'
   }
 
-  const getRoleColor = (role) => {
-    switch (role) {
-      case 'Admin':
-        return 'bg-orange-100 text-orange-800'
-      case 'Moderator':
-        return 'bg-red-100 text-red-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
 
   const getAvatarColor = (role) => {
     switch (role) {
@@ -206,24 +174,6 @@ function AdminUsersScreen() {
         >
           <View className="flex-row items-start justify-between">
             <View className="flex-row flex-1">
-              {/* Avatar */}
-              <View className="relative mr-5">
-                <View
-                  className={`w-18 h-18 ${getAvatarColor(
-                    user.role
-                  )} rounded-2xl items-center justify-center shadow-lg`}
-                >
-                  <Text className="text-white font-bold text-xl">
-                    {user.avatar}
-                  </Text>
-                </View>
-                {user.role === 'Admin' && (
-                  <View className="absolute -top-1 -right-1">
-                    <Crown size={18} color="#fbbf24" />
-                  </View>
-                )}
-              </View>
-
               {/* User Info */}
               <View className="flex-1">
                 <View className="flex-row items-center mb-3">
@@ -232,53 +182,49 @@ function AdminUsersScreen() {
                   </Text>
                   <View
                     className={`px-4 py-2 rounded-full ${getStatusColor(
-                      user.status
+                      user.isVerified ? 'Active' : 'Inactive'
                     )}`}
                   >
-                    <Text className="text-sm font-semibold">{user.status}</Text>
+                    <Text className="text-sm font-semibold">{user.isVerified ? 'Verified':'Not Verified'}</Text>
                   </View>
                 </View>
 
-                <View
-                  className={`self-start px-4 py-2 rounded-full mb-5 ${getRoleColor(
-                    user.role
-                  )}`}
-                >
-                  <Text className="text-sm font-semibold">{user.role}</Text>
-                </View>
 
-                <View className="space-y-4">
-                  <View className="flex-row items-center">
+                <View className="space-y-6">
+                  <View className="flex-row items-center pb-3">
+
+                    <Users size={18} color="#6B7280" />
+                    <Text className="text-gray-600 text-base ml-4">{user.role}</Text>
+                  </View>
+                  <View className="flex-row items-center pb-2">
                     <Mail size={18} color="#6B7280" />
-                    <Text
-                      className="text-gray-600 text-base ml-4"
-                      numberOfLines={1}
-                    >
+                    <Text className="text-gray-600 text-base ml-4" numberOfLines={1}>
                       {user.email}
                     </Text>
                   </View>
-                  <View className="flex-row items-center">
+                  <View className="flex-row items-center pb-2">
                     <Phone size={18} color="#6B7280" />
-                    <Text className="text-gray-600 text-base ml-4">
-                      {user.phone}
-                    </Text>
+                    <Text className="text-gray-600 text-base ml-4">{user.phone || 'no Phone number'}</Text>
                   </View>
-                  <View className="flex-row items-center">
+                  <View className="flex-row items-center pb-2">
                     <MapPin size={18} color="#6B7280" />
-                    <Text className="text-gray-600 text-base ml-4">
-                      {user.location}
-                    </Text>
+                    <Text className="text-gray-600 text-base ml-4">{user.location || 'no location'}</Text>
                   </View>
+                    <View className='flex-row items-center pb-2'>
+                      <Calendar size={18} color="#6B7280"/>
+                        <Text className="text-gray-600 text-base ml-4">
+                          Joined {user.createdAt?.slice(0, 10)}
+                        </Text>
+                    </View>
+
+                
                 </View>
 
-                <Text className="text-gray-500 text-sm mt-5 font-medium">
-                  Joined {user.joinDate}
-                </Text>
               </View>
             </View>
 
             {/* Actions */}
-            <TouchableOpacity className="p-4 bg-orange-50 rounded-2xl">
+            <TouchableOpacity className="p-2 bg-orange-50 rounded-2xl">
               <MoreVertical size={22} color="#ea580c" />
             </TouchableOpacity>
           </View>
@@ -332,7 +278,7 @@ function AdminUsersScreen() {
           </Animated.View>
         </Animated.View>
 
-        {/* Search and Filter */}
+        {/* Search */}
         <Animated.View
           className="px-6 py-8 -mt-4"
           style={{
@@ -341,7 +287,7 @@ function AdminUsersScreen() {
           }}
         >
           <View className="flex-row space-x-4">
-            <View className="flex-1 bg-white/95 backdrop-blur-xl rounded-3xl px-6 py-5 shadow-xl border border-orange-200 flex-row items-center">
+            <View className="flex-1 bg-white/95 backdrop-blur-xl rounded-3xl px-6 py-3 shadow-xl border border-orange-200 flex-row items-center">
               <Search size={24} color="#ea580c" />
               <TextInput
                 className="flex-1 ml-4 text-gray-900 text-lg"
@@ -351,45 +297,47 @@ function AdminUsersScreen() {
                 placeholderTextColor="#9CA3AF"
               />
             </View>
-            <TouchableOpacity className="bg-white/95 backdrop-blur-xl rounded-3xl px-6 py-5 shadow-xl border border-orange-200">
-              <Filter size={24} color="#ea580c" />
-            </TouchableOpacity>
           </View>
         </Animated.View>
 
         {/* Users List */}
-        <ScrollView
-          className="flex-1 px-6"
-          showsVerticalScrollIndicator={false}
-        >
-          <View className="flex-row items-center mb-8">
-            <UserCheck size={28} color="#ea580c" />
-            <Text className="text-2xl font-bold text-gray-800 ml-4">
-              All Users
-            </Text>
-            <Animated.View
-              className="ml-4"
-              style={{
-                transform: [
-                  {
-                    rotate: floatingAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: ['0deg', '360deg'],
-                    }),
-                  },
-                ],
-              }}
-            >
-              <Sparkles size={24} color="#f97316" />
-            </Animated.View>
+        {loading ? (
+          <View className="flex-1 justify-center items-center">
+            <Text className="text-gray-600 text-lg">Loading users...</Text>
           </View>
+        ) : error ? (
+          <View className="flex-1 justify-center items-center">
+            <Text className="text-red-500 text-lg">{error}</Text>
+          </View>
+        ) : (
+          <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+            <View className="flex-row items-center mb-8">
+              <UserCheck size={28} color="#ea580c" />
+              <Text className="text-2xl font-bold text-gray-800 ml-4">All Users</Text>
+              <Animated.View
+                className="ml-4"
+                style={{
+                  transform: [
+                    {
+                      rotate: floatingAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ['0deg', '360deg'],
+                      }),
+                    },
+                  ],
+                }}
+              >
+                <Sparkles size={24} color="#f97316" />
+              </Animated.View>
+            </View>
 
-          {filteredUsers.map((user, index) => (
-            <AnimatedUserCard key={user.id} user={user} index={index} />
-          ))}
+            {filteredUsers.map((user, index) => (
+              <AnimatedUserCard key={user._id} user={user} index={index} />
+            ))}
 
-          <View className="h-10" />
-        </ScrollView>
+            <View className="h-10" />
+          </ScrollView>
+        )}
       </View>
     </SafeAreaView>
   )

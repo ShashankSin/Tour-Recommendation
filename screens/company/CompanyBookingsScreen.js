@@ -208,7 +208,7 @@ function CompanyBookingsScreen({ navigation }) {
         <View style={styles.detailRow}>
           <Ionicons name="calendar-outline" size={16} color="#666" />
           <Text style={styles.detailText}>
-            Trek Date: {new Date(item.trekDate).toLocaleDateString()}
+            Trek Date: {new Date(item.startDate).toLocaleDateString()}
           </Text>
         </View>
 
@@ -236,7 +236,7 @@ function CompanyBookingsScreen({ navigation }) {
         <View style={styles.detailRow}>
           <Ionicons name="cash-outline" size={16} color="#666" />
           <Text style={styles.detailText}>
-            Total: ${item.totalPrice?.toFixed(2)} –{' '}
+            Total: Rs {item.totalPrice?.toFixed(2)} –{' '}
             <Text style={{ color: getPaymentStatusColor(item.paymentStatus) }}>
               {item.paymentStatus.charAt(0).toUpperCase() +
                 item.paymentStatus.slice(1)}
@@ -255,7 +255,7 @@ function CompanyBookingsScreen({ navigation }) {
         <TouchableOpacity style={styles.contactButton}>
           <Ionicons name="call-outline" size={16} color="#FF5722" />
           <Text style={styles.contactButtonText}>
-            {item.userId?.phone || 'N/A'}
+            {item.customerPhone || 'N/A'}
           </Text>
         </TouchableOpacity>
       </View>

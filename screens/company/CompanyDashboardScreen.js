@@ -87,10 +87,10 @@ function CompanyDashboardScreen({ navigation }) {
     // Example: Fetch companies from SQLite
     const fetchLocalCompanies = async () => {
       const companies = await getCompanies();
-      // setDashboardData({ ...dashboardData, companyProfile: companies[0] })
+      setDashboardData({ ...dashboardData, companyProfile: companies[0] })
     };
     fetchLocalCompanies();
-    // fetchDashboardData() // keep original if you want to fetch from API as well
+    fetchDashboardData() // keep original if you want to fetch from API as well
   }, [])
 
   const renderStatCard = (title, value, icon, color, onPress) => (
@@ -114,11 +114,11 @@ function CompanyDashboardScreen({ navigation }) {
         <Text style={styles.bookingCustomer}>{item.customerName}</Text>
         <Text style={styles.bookingTrek}>{item.trekName}</Text>
         <Text style={styles.bookingDate}>
-          {new Date(item.date).toLocaleDateString()}
+          {new Date(item.createdAt).toLocaleDateString()}
         </Text>
       </View>
       <View style={styles.bookingMeta}>
-        <Text style={styles.bookingAmount}>NPR {item.amount}</Text>
+        <Text style={styles.bookingAmount}>NPR {item.totalPrice}</Text>
         <View
           style={[
             styles.statusBadge,
@@ -211,9 +211,9 @@ function CompanyDashboardScreen({ navigation }) {
               labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
               datasets: [
                 {
-                  data: [1200, 1800, 1500, 2500, 3200, 4250],
+                  data: [1000, 1800, 1500, 2500, 2810, 4250],
                 },
-              ],
+              ],  
             }}
             width={Dimensions.get('window').width - 32}
             height={220}

@@ -1,17 +1,19 @@
 import React from 'react'
-import { NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer, CommonActions } from '@react-navigation/native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import RootNavigator from './navigation/AppNavigator'
 import { AuthProvider } from './context/AuthContext'
 import { StatusBar } from 'expo-status-bar'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { jwtDecode } from 'jwt-decode'
-import { CommonActions } from '@react-navigation/native'
+import {jwtDecode} from 'jwt-decode'
 import './global.css'
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 export const navigationRef = React.createRef()
 
+// 🔹 Handle token expiration: clear storage + reset navigation
 const handleTokenExpiration = async () => {
   await AsyncStorage.removeItem('token')
   if (navigationRef.current) {
@@ -24,10 +26,12 @@ const handleTokenExpiration = async () => {
   }
 }
 
+// 🔹 Axios global config
 axios.defaults.baseURL = 'http://10.0.2.2:5000/api'
 axios.defaults.timeout = 10000
 axios.defaults.headers.common['Content-Type'] = 'application/json'
 
+// 🔹 Request interceptor → attach token
 axios.interceptors.request.use(
   async (config) => {
     try {
@@ -48,11 +52,10 @@ axios.interceptors.request.use(
       return Promise.reject(error)
     }
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
+// 🔹 Response interceptor → catch 401 and network errors
 axios.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -72,15 +75,36 @@ axios.interceptors.response.use(
   }
 )
 
+// 🔹 TanStack Query client with defaults
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1, // retry once if failed
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 min fresh data
+      onError: (error) => {
+        console.error('Query Error:', error.message)
+      },
+    },
+    mutations: {
+      onError: (error) => {
+        console.error('Mutation Error:', error.message)
+      },
+    },
+  },
+})
+
 export default function App() {
   return (
-    <NavigationContainer ref={navigationRef}>
-      <AuthProvider>
-        <SafeAreaProvider>
-          <StatusBar style="dark" />
-          <RootNavigator />
-        </SafeAreaProvider>
-      </AuthProvider>
-    </NavigationContainer>
+    <QueryClientProvider client={queryClient}>
+      <NavigationContainer ref={navigationRef}>
+        <AuthProvider>
+          <SafeAreaProvider>
+            <StatusBar style="dark" />
+            <RootNavigator />
+          </SafeAreaProvider>
+        </AuthProvider>
+      </NavigationContainer>
+    </QueryClientProvider>
   )
 }

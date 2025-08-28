@@ -50,7 +50,8 @@ const AdminItinerariesScreen = () => {
   const navigation = useNavigation()
   const { logout } = useAuth()
 
-  useEffect(() => {
+ useEffect(() => {
+     // Staggered animations
     Animated.stagger(150, [
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -76,6 +77,7 @@ const AdminItinerariesScreen = () => {
       }),
     ]).start()
 
+    // Continuous floating animation
     Animated.loop(
       Animated.sequence([
         Animated.timing(floatingAnim, {
@@ -90,22 +92,6 @@ const AdminItinerariesScreen = () => {
         }),
       ])
     ).start()
-
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.05,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start()
-
     fetchItineraries()
   }, [])
 
@@ -301,7 +287,7 @@ const AdminItinerariesScreen = () => {
             </Text>
 
             {/* Details */}
-            <View className="space-y-4 mb-6">
+            <View className="space-y-6 mb-6">
               <View className="flex-row items-center">
                 <MapPin size={20} color="#6B7280" />
                 <Text className="text-gray-600 text-base ml-4">
@@ -311,7 +297,7 @@ const AdminItinerariesScreen = () => {
               <View className="flex-row items-center">
                 <Calendar size={20} color="#6B7280" />
                 <Text className="text-gray-600 text-base ml-4">
-                  {item.startDate} - {item.endDate}
+                  {item.updatedAt?new Date(item.updatedAt).toLocaleDateString():'Date not available'}
                 </Text>
               </View>
               <View className="flex-row items-center">
@@ -511,7 +497,7 @@ const AdminItinerariesScreen = () => {
               transform: [{ scale: searchScale }],
             }}
           >
-            <View className="bg-white/95 backdrop-blur-xl rounded-3xl px-6 py-5 shadow-xl border border-orange-200 flex-row items-center">
+            <View className="bg-white/95 backdrop-blur-xl rounded-3xl px-3 py-3 shadow-xl border border-orange-200 flex-row items-center">
               <Search size={24} color="#ea580c" />
               <TextInput
                 className="flex-1 ml-4 text-gray-900 text-lg"

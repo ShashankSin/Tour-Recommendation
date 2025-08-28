@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   TextInput,
   Animated,
-  Dimensions,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import {
@@ -21,11 +20,13 @@ import {
   Sparkles,
   TrendingUp,
 } from 'lucide-react-native'
-
-const { width } = Dimensions.get('window')
+import axios from 'axios'
 
 function AdminCompaniesScreen() {
   const [searchQuery, setSearchQuery] = useState('')
+  const [companies, setCompanies] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const fadeAnim = useRef(new Animated.Value(0)).current
   const slideAnim = useRef(new Animated.Value(50)).current
@@ -34,6 +35,7 @@ function AdminCompaniesScreen() {
   const floatingAnim = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
+    // Staggered animations
     Animated.stagger(150, [
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -59,6 +61,7 @@ function AdminCompaniesScreen() {
       }),
     ]).start()
 
+    // Continuous floating animation
     Animated.loop(
       Animated.sequence([
         Animated.timing(floatingAnim, {
@@ -74,53 +77,22 @@ function AdminCompaniesScreen() {
       ])
     ).start()
   }, [])
+  // Fetch companies from API
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const response = await axios.get('http://10.0.2.2:5000/api/admin/getCompany') 
+        setCompanies(response.data.data) 
+        console.log(response.data.data)
+        setLoading(false)
+      } catch (err) {
+        setError('Failed to fetch companies')
+        setLoading(false)
+      }
+    }
 
-  const companies = [
-    {
-      id: 1,
-      name: 'Acme Corporation',
-      industry: 'Technology',
-      employees: 250,
-      location: 'San Francisco, CA',
-      status: 'Verified',
-      joinDate: '2024-01-15',
-      rating: 4.8,
-      logo: 'AC',
-    },
-    {
-      id: 2,
-      name: 'Tech Solutions Inc',
-      industry: 'Software',
-      employees: 120,
-      location: 'Austin, TX',
-      status: 'Pending',
-      joinDate: '2024-01-20',
-      rating: 4.5,
-      logo: 'TS',
-    },
-    {
-      id: 3,
-      name: 'Global Dynamics',
-      industry: 'Manufacturing',
-      employees: 500,
-      location: 'Detroit, MI',
-      status: 'Verified',
-      joinDate: '2024-01-10',
-      rating: 4.2,
-      logo: 'GD',
-    },
-    {
-      id: 4,
-      name: 'Innovation Labs',
-      industry: 'Research',
-      employees: 75,
-      location: 'Boston, MA',
-      status: 'Rejected',
-      joinDate: '2024-01-18',
-      rating: 3.9,
-      logo: 'IL',
-    },
-  ]
+    fetchCompanies()
+  }, [])
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -135,20 +107,6 @@ function AdminCompaniesScreen() {
     }
   }
 
-  const getIndustryColor = (industry) => {
-    switch (industry) {
-      case 'Technology':
-        return 'bg-orange-100 text-orange-800'
-      case 'Software':
-        return 'bg-red-100 text-red-800'
-      case 'Manufacturing':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'Research':
-        return 'bg-pink-100 text-pink-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
 
   const AnimatedCompanyCard = ({ company, index }) => {
     const cardAnim = useRef(new Animated.Value(0)).current
@@ -199,13 +157,6 @@ function AdminCompaniesScreen() {
         >
           <View className="flex-row items-start justify-between">
             <View className="flex-row flex-1">
-              {/* Company Logo */}
-              <View className="w-18 h-18 bg-orange-500 rounded-2xl items-center justify-center mr-5 shadow-lg">
-                <Text className="text-white font-bold text-xl">
-                  {company.logo}
-                </Text>
-              </View>
-
               {/* Company Info */}
               <View className="flex-1">
                 <View className="flex-row items-center mb-4">
@@ -214,36 +165,27 @@ function AdminCompaniesScreen() {
                   </Text>
                   <View
                     className={`px-4 py-2 rounded-full ${getStatusColor(
-                      company.status
+                      company.isVerified ? 'Verified' : company.status
                     )}`}
                   >
                     <Text className="text-sm font-semibold">
-                      {company.status}
+                      {company.isVerified ? 'Verified' : company.status}
                     </Text>
                   </View>
                 </View>
 
-                <View
-                  className={`self-start px-4 py-2 rounded-full mb-5 ${getIndustryColor(
-                    company.industry
-                  )}`}
-                >
-                  <Text className="text-sm font-semibold">
-                    {company.industry}
-                  </Text>
-                </View>
 
                 <View className="space-y-4">
                   <View className="flex-row items-center">
                     <Users size={18} color="#6B7280" />
                     <Text className="text-gray-600 text-base ml-4">
-                      {company.employees} employees
+                      {company.employees} Company
                     </Text>
                   </View>
                   <View className="flex-row items-center">
                     <MapPin size={18} color="#6B7280" />
                     <Text className="text-gray-600 text-base ml-4">
-                      {company.location}
+                      {company.location || 'Location not specified'}
                     </Text>
                   </View>
                   <View className="flex-row items-center">
@@ -255,7 +197,7 @@ function AdminCompaniesScreen() {
                   <View className="flex-row items-center">
                     <Calendar size={18} color="#6B7280" />
                     <Text className="text-gray-600 text-base ml-4">
-                      Joined {company.joinDate}
+                      Joined {company.createdAt?.slice(0, 10)}
                     </Text>
                   </View>
                 </View>
@@ -328,7 +270,7 @@ function AdminCompaniesScreen() {
           }}
         >
           <View className="flex-row space-x-4">
-            <View className="flex-1 bg-white/95 backdrop-blur-xl rounded-3xl px-6 py-5 shadow-xl border border-orange-200 flex-row items-center">
+            <View className="flex-1 bg-white/95 backdrop-blur-xl rounded-3xl px-6 py-3 shadow-xl border border-orange-200 flex-row items-center">
               <Search size={24} color="#ea580c" />
               <TextInput
                 className="flex-1 ml-4 text-gray-900 text-lg"
@@ -338,9 +280,6 @@ function AdminCompaniesScreen() {
                 placeholderTextColor="#9CA3AF"
               />
             </View>
-            <TouchableOpacity className="bg-white/95 backdrop-blur-xl rounded-3xl px-6 py-5 shadow-xl border border-orange-200">
-              <Filter size={24} color="#ea580c" />
-            </TouchableOpacity>
           </View>
         </Animated.View>
 
@@ -371,13 +310,22 @@ function AdminCompaniesScreen() {
             </Animated.View>
           </View>
 
-          {companies.map((company, index) => (
-            <AnimatedCompanyCard
-              key={company.id}
-              company={company}
-              index={index}
-            />
-          ))}
+          {loading && <Text className="text-center text-gray-600 mt-10">Loading companies...</Text>}
+          {error && <Text className="text-center text-red-500 mt-10">{error}</Text>}
+
+          {!loading && !error &&
+            companies
+              .filter((company) =>
+                company.name.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map((company, index) => (
+                <AnimatedCompanyCard
+                  key={company.id || company._id}
+                  company={company}
+                  index={index}
+                />
+              ))
+          }
 
           <View className="h-10" />
         </ScrollView>

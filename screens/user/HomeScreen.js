@@ -64,26 +64,26 @@ const HomeScreen = ({ navigation }) => {
     }
 
    try {
-  //! Fetch user reviews
-  const reviewsResponse = await axios.get('/review/trek/all', {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+    //! Fetch user reviews
+        const reviewsResponse = await axios.get('/review/trek/all', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-  if (reviewsResponse.data.success) {
+        if (reviewsResponse.data.success) {
 
-    const userReviews = reviewsResponse.data.reviews.filter((review) => {
-    const reviewUserId = typeof review.userId === 'string' ? review.userId : review.userId?._id;
+          const userReviews = reviewsResponse.data.reviews.filter((review) => {
+          const reviewUserId = typeof review.userId === 'string' ? review.userId : review.userId?._id;
 
 
-  // Compare as strings
-  return reviewUserId?.toString() === user.id?.toString();
-});
+        // Compare as strings
+        return reviewUserId?.toString() === user.id?.toString();
+      });
 
-    setReviews(userReviews);
-  }
-} catch (error) {
-  setReviews([]);
-}
+        setReviews(userReviews);
+      }
+    } catch (error) {
+      setReviews([]);
+    }
 
 
     try {
